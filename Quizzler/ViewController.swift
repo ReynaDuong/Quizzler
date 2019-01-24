@@ -5,20 +5,25 @@ class ViewController: UIViewController {
     let allQuestions = QuestionBank()
     var pickedAnswer: Bool = false
     var questionNumber: Int = 0
+    var score: Int = 0
     
     @IBOutlet weak var questionLabel: UILabel!
     @IBOutlet weak var scoreLabel: UILabel!
     @IBOutlet var progressBar: UIView!
     @IBOutlet weak var progressLabel: UILabel!
     
+    @IBOutlet var falseButton: UIButton!
+    @IBOutlet var trueButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // make soft corners for button
+        falseButton.layer.cornerRadius = 5.0
+        trueButton.layer.cornerRadius = 5.0
+        
         // display the first question
-        let firstQuestion = allQuestions.list[questionNumber]
-        questionLabel.text = firstQuestion.questionText
-        questionNumber += 1
+        nextQuestion()
     }
 
 
@@ -41,7 +46,11 @@ class ViewController: UIViewController {
     
     
     func updateUI() {
+        scoreLabel.text = "Score: \(score)"
+        progressLabel.text = "\(questionNumber + 1) / 13"
         
+        // update the progress bar
+        progressBar.frame.size.width = (view.frame.size.width / 13) * CGFloat(questionNumber + 1)
     }
     
 
@@ -50,6 +59,9 @@ class ViewController: UIViewController {
         
         if questionNumber < questionCount{
             questionLabel.text = allQuestions.list[questionNumber].questionText
+            
+            // update the score and progress bar
+            updateUI()
         }
         else{
             // end of the game
@@ -71,16 +83,20 @@ class ViewController: UIViewController {
         let correctAnswer = allQuestions.list[questionNumber].answer
         
         if correctAnswer == pickedAnswer{
-            print("You got it")
+            score += 1
+            ProgressHUD.showSuccess("Correct!")
         }
         else{
-            print("Wrong")
+            ProgressHUD.showError("Wrong!")
         }
     }
     
     
     func startOver() {
+        // reset all var
         questionNumber = 0
         nextQuestion()
+        score = 0
+        pickedAnswer = false
     }
 }
